@@ -31,7 +31,7 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ account, profile }) {
       try {
         if (!account || !profile) return false
 

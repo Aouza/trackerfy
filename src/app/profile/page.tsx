@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import Image from 'next/image'
 
@@ -58,13 +58,7 @@ export default function Profile() {
   const [topArtists, setTopArtists] = useState<TopArtist[]>([])
   const [topTracks, setTopTracks] = useState<TopTrack[]>([])
 
-  useEffect(() => {
-    if (session?.accessToken) {
-      fetchProfile()
-    }
-  }, [session])
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     if (!session?.accessToken) return
     setLoading(true)
     try {
@@ -80,7 +74,13 @@ export default function Profile() {
       console.error('Error fetching data:', error)
     }
     setLoading(false)
-  }
+  }, [session?.accessToken])
+
+  useEffect(() => {
+    if (session?.accessToken) {
+      fetchProfile()
+    }
+  }, [session?.accessToken, fetchProfile])
 
   if (!session) {
     return (

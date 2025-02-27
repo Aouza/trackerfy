@@ -30,16 +30,6 @@ export default async function UserProfile({ params }: { params: { id: string } }
     notFound()
   }
 
-  // Verifica se o usuário atual segue este perfil
-  const isFollowing = session?.user ? await prisma.user.count({
-    where: {
-      spotifyId: session.user.id,
-      following: {
-        some: { id: user.id }
-      }
-    }
-  }) > 0 : false
-
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-center gap-6">
