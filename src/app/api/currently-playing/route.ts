@@ -4,6 +4,27 @@ import { prisma } from 'src/lib/prisma'
 import { authOptions } from 'src/lib/auth'
 import { PrismaClient } from '@prisma/client'
 
+interface SpotifyArtist {
+  name: string
+}
+
+interface SpotifyTrack {
+  id: string
+  name: string
+  artists: SpotifyArtist[]
+  album: {
+    name: string
+    images: { url: string }[]
+  }
+}
+
+interface SpotifyResponse {
+  item: SpotifyTrack
+  is_playing: boolean
+  progress_ms: number
+  timestamp: number
+}
+
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.accessToken) {
@@ -41,7 +62,7 @@ export async function GET() {
       return NextResponse.json(null)
     }
 
-    const data = await res.json()
+    const data = await res.json() as SpotifyResponse
     console.log('Spotify API response data:', data)
 
     if (!data?.item) {
@@ -60,7 +81,7 @@ export async function GET() {
           data: {
             spotifyId: data.item.id,
             name: data.item.name,
-            artist: data.item.artists.map(a => a.name).join(', '),
+            artist: data.item.artists.map((a: SpotifyArtist) => a.name).join(', '),
             albumName: data.item.album.name,
             albumImage: data.item.album.images[0].url,
             playedAt: new Date(),
