@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { SpotifyTrack } from '@/types/spotify'
+import { SpotifyTrack } from 'src/types/spotify'
 
 interface TrackItemProps {
   track: SpotifyTrack

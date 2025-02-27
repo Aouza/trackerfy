@@ -1,10 +1,10 @@
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { FollowButton } from '@/components/FollowButton'
+import { authOptions } from 'src/lib/auth'
+import { prisma } from 'src/lib/prisma'
+import { FollowButton } from 'src/components/FollowButton'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { TimeAgo } from '@/components/TimeAgo'
+import { TimeAgo } from 'src/components/TimeAgo'
 
 export default async function UserProfile({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
