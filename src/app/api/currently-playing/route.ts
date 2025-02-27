@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { prisma } from 'src/lib/prisma'
 import { authOptions } from 'src/lib/auth'
+import { PrismaClient } from '@prisma/client'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -53,7 +54,7 @@ export async function GET() {
     }
 
     try {
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx: Omit<PrismaClient, '$transaction'>) => {
         console.log('Creating track in database...')
         const track = await tx.track.create({
           data: {
@@ -62,19 +63,22 @@ export async function GET() {
             artist: data.item.artists.map(a => a.name).join(', '),
             albumName: data.item.album.name,
             albumImage: data.item.album.images[0].url,
+            playedAt: new Date(),
             user: {
               connect: { id: currentUser.id }
             }
           }
         })
 
-        console.log('Updating user nowPlaying...')
-        const updatedUser = await tx.user.update({
+        console.log('Updating user with new track...')
+        await tx.user.update({
           where: { id: currentUser.id },
-          data: { nowPlayingId: track.id }
+          data: {
+            nowPlayingId: track.id
+          }
         })
 
-        return { track, updatedUser }
+        return { track }
       })
 
       console.log('Successfully updated currently playing')
