@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { RecentTrackItem } from 'src/types/spotify'
 import { TimeAgo } from 'src/components/TimeAgo'
@@ -10,13 +10,7 @@ export default function History() {
   const [recentTracks, setRecentTracks] = useState<RecentTrackItem[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (session?.accessToken) {
-      fetchRecentTracks()
-    }
-  }, [session])
-
-  async function fetchRecentTracks() {
+  const fetchRecentTracks = useCallback(async () => {
     if (!session?.accessToken) return
     setLoading(true)
     try {
@@ -31,7 +25,13 @@ export default function History() {
       console.error('Error fetching recent tracks:', error)
     }
     setLoading(false)
-  }
+  }, [session?.accessToken])
+
+  useEffect(() => {
+    if (session?.accessToken) {
+      fetchRecentTracks()
+    }
+  }, [session?.accessToken, fetchRecentTracks])
 
   if (!session) {
     return (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AuthError() {
   const searchParams = useSearchParams()
@@ -10,14 +11,13 @@ export default function AuthError() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-4">Erro na Autenticação</h1>
-        <p className="text-red-500">{error}</p>
-        <p className="mt-4">
-          Por favor, tente{' '}
-          <a href="/api/auth/signin" className="text-blue-500 hover:underline">
-            fazer login
-          </a>{' '}
-          novamente.
-        </p>
+        <p className="text-zinc-400 mb-4">{error}</p>
+        <Link 
+          href="/api/auth/signin" 
+          className="text-green-500 hover:text-green-400"
+        >
+          Tentar novamente
+        </Link>
       </div>
     </div>
   )

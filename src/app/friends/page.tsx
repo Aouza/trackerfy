@@ -1,8 +1,7 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { Search } from 'lucide-react'
 
 interface SpotifyUser {
   id: string
@@ -24,21 +23,23 @@ export default function Friends() {
   const [following, setFollowing] = useState<SpotifyUser[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (session?.accessToken) {
-      loadFollowing()
-    }
-  }, [session])
-
-  async function loadFollowing() {
+  const loadFollowing = useCallback(async () => {
     if (!session?.accessToken) return
+    setLoading(true)
     try {
       const users = await getFollowing(session.accessToken)
       setFollowing(users)
     } catch (error) {
       console.error('Error loading following:', error)
     }
-  }
+    setLoading(false)
+  }, [session?.accessToken])
+
+  useEffect(() => {
+    if (session?.accessToken) {
+      loadFollowing()
+    }
+  }, [session?.accessToken, loadFollowing])
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -54,37 +55,42 @@ export default function Friends() {
         </p>
       </div>
 
-      {/* Lista de quem você segue */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium text-white">Seguindo</h2>
-        {following.map((user) => (
-          <div key={user.id} className="flex items-center justify-between bg-zinc-900/50 p-4 rounded-lg">
-            <div className="flex items-center gap-4">
-              {user.images?.[0]?.url ? (
-                <Image
-                  src={user.images[0].url}
-                  alt={user.display_name}
-                  width={48}
-                  height={48}
-                  className="rounded-full"
-                />
-              ) : (
-                <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center">
-                  <span className="text-xl text-zinc-500">
-                    {user.display_name[0]}
-                  </span>
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-green-500" />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <h2 className="text-lg font-medium text-white">Seguindo</h2>
+          {following.map((user) => (
+            <div key={user.id} className="flex items-center justify-between bg-zinc-900/50 p-4 rounded-lg">
+              <div className="flex items-center gap-4">
+                {user.images?.[0]?.url ? (
+                  <Image
+                    src={user.images[0].url}
+                    alt={user.display_name}
+                    width={48}
+                    height={48}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center">
+                    <span className="text-xl text-zinc-500">
+                      {user.display_name[0]}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <p className="text-white font-medium">{user.display_name}</p>
+                  <p className="text-sm text-zinc-400">
+                    {user.followers.total} seguidores
+                  </p>
                 </div>
-              )}
-              <div>
-                <p className="text-white font-medium">{user.display_name}</p>
-                <p className="text-sm text-zinc-400">
-                  {user.followers.total} seguidores
-                </p>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 } 

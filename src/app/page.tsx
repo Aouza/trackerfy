@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { TimeAgo } from 'src/components/TimeAgo'
@@ -30,26 +30,11 @@ export default function Feed() {
   const [feed, setFeed] = useState<FeedItem[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (session?.accessToken) {
-      fetchFeed()
-    }
-  }, [session])
-
-  usePolling(() => {
-    if (session?.accessToken) {
-      fetchFeed()
-    }
-  }, 60000)
-
-  async function fetchFeed() {
+  const fetchFeed = useCallback(async () => {
     if (!session?.accessToken) return
     setLoading(true)
     try {
-      // Atualiza a música atual
       await fetch('/api/currently-playing')
-
-      // Busca o feed atualizado
       const res = await fetch('/api/feed')
       const data = await res.json()
       if (Array.isArray(data)) {
@@ -59,7 +44,19 @@ export default function Feed() {
       console.error('Error fetching feed:', error)
     }
     setLoading(false)
-  }
+  }, [session?.accessToken])
+
+  useEffect(() => {
+    if (session?.accessToken) {
+      fetchFeed()
+    }
+  }, [session?.accessToken, fetchFeed])
+
+  usePolling(() => {
+    if (session?.accessToken) {
+      fetchFeed()
+    }
+  }, 60000)
 
   if (!session) {
     return (
