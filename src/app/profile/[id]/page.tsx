@@ -1,13 +1,9 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from 'src/lib/auth'
 import { prisma } from 'src/lib/prisma'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { TimeAgo } from 'src/components/TimeAgo'
 
 export default async function UserProfile({ params }: { params: { id: string } }) {
-  // Removido session já que não está sendo usado
-  
   // Busca o usuário e suas informações
   const user = await prisma.user.findUnique({
     where: { id: params.id },
@@ -42,8 +38,6 @@ export default async function UserProfile({ params }: { params: { id: string } }
             className="rounded-full"
           />
         )}
-        
-  
       </div>
 
       {/* Música atual */}
