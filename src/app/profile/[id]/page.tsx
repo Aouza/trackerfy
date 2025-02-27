@@ -1,7 +1,6 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from 'src/lib/auth'
 import { prisma } from 'src/lib/prisma'
-import { FollowButton } from 'src/components/FollowButton'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { TimeAgo } from 'src/components/TimeAgo'
@@ -54,22 +53,7 @@ export default async function UserProfile({ params }: { params: { id: string } }
           />
         )}
         
-        <div className="flex-1">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">{user.name}</h1>
-            {session?.user && session.user.id !== user.spotifyId && (
-              <FollowButton
-                targetUserId={user.id}
-                initialIsFollowing={isFollowing}
-              />
-            )}
-          </div>
-          
-          <div className="flex gap-4 mt-2 text-sm text-zinc-400">
-            <span>{user._count.following} seguindo</span>
-            <span>{user._count.followedBy} seguidores</span>
-          </div>
-        </div>
+  
       </div>
 
       {/* Música atual */}
