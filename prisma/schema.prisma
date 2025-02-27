@@ -1,0 +1,44 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  spotifyId String   @unique
+  name      String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  following    User[]  @relation("UserFollows")
+  followedBy   User[]  @relation("UserFollows")
+  playHistory  Track[] @relation("UserPlayHistory")
+  nowPlaying   Track?  @relation(fields: [nowPlayingId], references: [id])
+  nowPlayingId String? @unique
+
+  @@index([spotifyId])
+}
+
+model Track {
+  id         String   @id @default(cuid())
+  spotifyId  String
+  name       String
+  artist     String
+  albumName  String
+  albumImage String
+  playedAt   DateTime @default(now())
+
+  user   User   @relation("UserPlayHistory", fields: [userId], references: [id])
+  userId String
+
+  playedByUser User? @relation()
+
+  @@index([spotifyId])
+  @@index([userId])
+  @@index([playedAt])
+}
