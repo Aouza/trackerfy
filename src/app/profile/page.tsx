@@ -26,7 +26,7 @@ interface TopTrack {
   album: { images: { url: string }[] }
 }
 
-async function getProfile(accessToken: string) {
+async function getProfile(accessToken: string): Promise<SpotifyProfile> {
   const res = await fetch('https://api.spotify.com/v1/me', {
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -35,7 +35,7 @@ async function getProfile(accessToken: string) {
   return res.json()
 }
 
-async function getTopArtists(accessToken: string) {
+async function getTopArtists(accessToken: string): Promise<TopArtist[]> {
   const res = await fetch('https://api.spotify.com/v1/me/top/artists?limit=5&time_range=short_term', {
     headers: { Authorization: `Bearer ${accessToken}` }
   })
@@ -43,7 +43,7 @@ async function getTopArtists(accessToken: string) {
   return data.items
 }
 
-async function getTopTracks(accessToken: string) {
+async function getTopTracks(accessToken: string): Promise<TopTrack[]> {
   const res = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
     headers: { Authorization: `Bearer ${accessToken}` }
   })
