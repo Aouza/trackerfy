@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { TimeAgo } from 'src/components/TimeAgo'
 
 export default async function UserProfile({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
+  // Removido session já que não está sendo usado
   
   // Busca o usuário e suas informações
   const user = await prisma.user.findUnique({
