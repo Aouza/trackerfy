@@ -3,7 +3,13 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { TimeAgo } from 'src/components/TimeAgo'
 
-export default async function UserProfile({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string
+  }
+}
+
+export default async function UserProfile({ params }: PageProps) {
   // Busca o usuário e suas informações
   const user = await prisma.user.findUnique({
     where: { id: params.id },
