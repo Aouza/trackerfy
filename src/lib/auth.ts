@@ -30,6 +30,7 @@ export const authOptions: AuthOptions = {
       }
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET, // 🔥 ESSA LINHA É OBRIGATÓRIA EM 
   callbacks: {
     async signIn({ account, profile }) {
       try {
@@ -76,3 +77,5 @@ export const authOptions: AuthOptions = {
     error: '/auth/error'
   }
 } 
+
+
