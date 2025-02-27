@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { prisma } from 'src/lib/prisma'
 import { authOptions } from 'src/lib/auth'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 
 interface SpotifyArtist {
   name: string
@@ -23,6 +23,19 @@ interface SpotifyResponse {
   is_playing: boolean
   progress_ms: number
   timestamp: number
+}
+
+interface TransactionResult {
+  track: {
+    id: string
+    name: string
+    spotifyId: string
+    artist: string
+    albumName: string
+    albumImage: string
+    playedAt: Date
+    userId: string
+  }
 }
 
 export async function GET() {
@@ -75,7 +88,7 @@ export async function GET() {
     }
 
     try {
-      const result = await prisma.$transaction(async (tx: Omit<PrismaClient, '$transaction'>) => {
+      const result = await prisma.$transaction<TransactionResult>(async (tx: Prisma.TransactionClient) => {
         console.log('Creating track in database...')
         const track = await tx.track.create({
           data: {
